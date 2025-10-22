@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Daily Notes</title>
+    <style>
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      h1 {
+        font-size: x-large;
+        margin-top: 43px;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+      }
+      .date-display {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .date-display .year {
+        font-size: 24px;
+        margin-right: 10px;
+      }
+      .date-display .month-day {
+        font-size: 36px;
+        margin-right: 10px;
+      }
+      .date-display .weekday {
+        font-size: 18px;
+        line-height: 1.2;
+      }
+      .notes-container {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .note-area {
+        flex: 1;
+        margin: 0 10px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+      .note-area.selected {
+        background-color: #e7f3fe;
+      }
+      .note-header {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .text-box {
+        height: 3500px;
+      }
+      textarea {
+        border: none;
+        outline: 0;
+        box-sizing: border-box;
+        width: 100%;
+        color: inherit;
+        background-color: inherit;
+        line-height: 200%;
+      }
+      a {
+        color: rgb(127, 197, 255);
+      }
+      .markdown-viewer,
+      .text-box {
+        font-family: "BIZ UDGothic";
+        width: 100%;
+        margin-top: 20px;
+        border: none;
+        padding: 5px;
+        letter-spacing: 150%;
+        font-size: large;
+        line-height: 200%;
+        word-break: break-all;
+      }
+      .markdown-viewer {
+        display: none;
+      }
+      .search-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(226, 226, 226, 0.4);
+      }
+      .search-modal-content {
+        background-color: #fafad2;
+        color: green;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #d8d8d8;
+        width: 80%;
+      }
+      #searchInput {
+        width: 100%;
+        padding: 15px;
+        font-size: 20px;
+        box-sizing: border-box;
+      }
+      #searchResults {
+        list-style: none;
+        padding: 0;
+      }
+      #searchResults li {
+        cursor: pointer;
+        padding: 10px;
+        font-size: 18px;
+      }
+      #searchResults li.selected,
+      #searchResults li:hover {
+        background-color: #ddd;
+      }
+      #searchResults li span.date {
+        display: block;
+        font-weight: 700;
+      }
+      #searchResults li span.text {
+        display: block;
+        margin-top: 5px;
+      }
+      .highlight {
+        background-color: #ff0;
+        font-weight: 700;
+      }
+      .storage-gauge-container {
+        width: 100%;
+        background-color: #ddd;
+      }
+      .storage-gauge {
+        width: 0;
+        background-color: #4caf50;
+        height: 30px;
+      }
+      .top-items {
+        padding-top: 10px;
+      }
+      .top-items p {
+        word-break: break-all;
+      }
+      :root {
+        --default-bg-color: #ffffff;
+        --default-text-color: #000000;
+        --dark-bg-color: #000000;
+        --dark-text-color: #ffffff;
+        --blue-bg-color: #e7f3fe;
+        --blue-text-color: #000000;
+        --orange-bg-color: #fff5e6;
+        --orange-text-color: #000000;
+        --green-bg-color: #e6f9e9;
+        --green-text-color: #000000;
+      }
+      body.default-theme {
+        background-color: var(--default-bg-color);
+        color: var(--default-text-color);
+      }
+      body.dark-theme {
+        background-color: var(--dark-bg-color);
+        color: var(--dark-text-color);
+      }
+      body.blue-theme {
+        background-color: var(--blue-bg-color);
+        color: var(--blue-text-color);
+      }
+      body.orange-theme {
+        background-color: var(--orange-bg-color);
+        color: var(--orange-text-color);
+      }
+      body.green-theme {
+        background-color: var(--green-bg-color);
+        color: var(--green-text-color);
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="date-display" id="dateDisplay">
+        <span class="year" id="yearDisplay">YYYY</span>
+        <span class="month-day" id="monthDayDisplay">MM/DD</span>
+        <span class="weekday" id="weekdayDisplay">EEEE</span>
+      </div>
+      <div class="notes-container">
+        <div class="note-area" id="yesterdayArea">
+          <div class="note-header" id="yesterdayHeader">昨日</div>
+          <textarea class="text-box" id="yesterdayBox" placeholder="メモを入力してください..."></textarea>
+          <div class="markdown-viewer" id="yesterdayViewer"></div>
+        </div>
+        <div class="note-area selected" id="todayArea">
+          <div class="note-header" id="todayHeader">今日</div>
+          <textarea class="text-box" id="todayBox" placeholder="メモを入力してください..."></textarea>
+          <div class="markdown-viewer" id="todayViewer"></div>
+        </div>
+        <div class="note-area" id="tomorrowArea">
+          <div class="note-header" id="tomorrowHeader">明日</div>
+          <textarea class="text-box" id="tomorrowBox" placeholder="メモを入力してください..."></textarea>
+          <div class="markdown-viewer" id="tomorrowViewer"></div>
+        </div>
+      </div>
+    </div>
+    <div id="modalTemplate" class="modal-template">
+      <div class="modal-content">
+        <h2 class="modal-title"></h2>
+        <div class="modal-body"></div>
+        <div class="modal-footer"></div>
+      </div>
+    </div>
+    <div id="shortcutModal" class="search-modal close-on-click-outside">
+      <div class="search-modal-content">
+        <h2>ヘルプ</h2>
+        <h3>マウス操作</h3>
+        <ul>
+          <li><strong>本文クリック:</strong> 表示されている本文をクリックすると、編集モードになります。</li>
+        </ul>
+        <h3>ショートカットキー一覧</h3>
+        <h4>基本操作</h4>
+        <ul>
+          <li><strong>Alt + / :</strong> このヘルプを表示</li>
+          <li><strong>Alt + s :</strong> 今日の日付に移動</li>
+          <li><strong>Alt + k :</strong> 検索ウィンドウを表示</li>
+          <li><strong>Alt + l :</strong> 保存されているデータの使用状況を表示</li>
+          <li><strong>Alt + o :</strong> バックアップデータを取り込む</li>
+        </ul>
+        <h4>日付移動</h4>
+        <ul>
+          <li><strong>← :</strong> 昨日に移動</li>
+          <li><strong>→ :</strong> 明日に移動</li>
+        </ul>
+        <h4>その他</h4>
+        <ul>
+          <li><strong>Esc :</strong> このウィンドウを閉じる</li>
+        </ul>
+        <h3>データのバックアップと復元</h3>
+        <ul>
+          <li>メモが更新されると、JSONファイルが自動的にダウンロードされます。定期的に不要なファイルを削除してください。</li>
+          <li>新しいブラウザでJSONを開くには、Alt + o キーでファイル選択ダイアログを開き、バックアップを選択します。</li>
+        </ul>
+      </div>
+    </div>
+    <div id="searchModal" class="search-modal close-on-click-outside">
+      <div class="search-modal-content">
+        <input type="text" id="searchInput" placeholder="検索キーワードを入力" />
+        <ul id="searchResults"></ul>
+      </div>
+    </div>
+    <div id="storageModal" class="search-modal close-on-click-outside">
+      <div class="search-modal-content">
+        <h2>LocalStorage 使用状況</h2>
+        <div id="storageGaugeContainer" class="storage-gauge-container">
+          <div id="storageGauge" class="storage-gauge"></div>
+        </div>
+        <p id="storageText"></p>
+        <div id="topItems" class="top-items"></div>
+      </div>
+    </div>
+    <div id="themeModal" class="search-modal close-on-click-outside">
+      <div class="search-modal-content">
+        <h2>テーマカラーの選択</h2>
+        <button id="defaultTheme">白（デフォルト）</button>
+        <button id="darkTheme">黒（ダークモード）</button>
+        <button id="blueTheme">青</button>
+        <button id="orangeTheme">オレンジ</button>
+        <button id="greenTheme">緑</button>
+      </div>
+    </div>
+    <input type="file" id="fileInput" style="display: none" />
+    <script>
+      (() => {
+        const elements = {
+          yearDisplay: document.getElementById("yearDisplay"),
+          monthDayDisplay: document.getElementById("monthDayDisplay"),
+          weekdayDisplay: document.getElementById("weekdayDisplay"),
+          yesterdayArea: document.getElementById("yesterdayArea"),
+          todayArea: document.getElementById("todayArea"),
+          tomorrowArea: document.getElementById("tomorrowArea"),
+          yesterdayBox: document.getElementById("yesterdayBox"),
+          todayBox: document.getElementById("todayBox"),
+          tomorrowBox: document.getElementById("tomorrowBox"),
+          yesterdayViewer: document.getElementById("yesterdayViewer"),
+          todayViewer: document.getElementById("todayViewer"),
+          tomorrowViewer: document.getElementById("tomorrowViewer"),
+          yesterdayHeader: document.getElementById("yesterdayHeader"),
+          todayHeader: document.getElementById("todayHeader"),
+          tomorrowHeader: document.getElementById("tomorrowHeader"),
+          fileInput: document.getElementById("fileInput"),
+          searchModal: document.getElementById("searchModal"),
+          searchInput: document.getElementById("searchInput"),
+          searchResults: document.getElementById("searchResults"),
+          storageModal: document.getElementById("storageModal"),
+          storageGauge: document.getElementById("storageGauge"),
+          storageText: document.getElementById("storageText"),
+          shortcutModal: document.getElementById("shortcutModal"),
+          themeModal: document.getElementById("themeModal"),
+          topItems: document.getElementById("topItems"),
+        };
+
+        const state = {
+          today: new Date(),
+          selectedArea: "today",
+        };
+
+        // 日付をフォーマットして表示
+        const formatDate = (date) => {
+          return `${date.getFullYear()}年${String(date.getMonth() + 1).padStart(2, "0")}月${String(date.getDate()).padStart(2, "0")}日 (${date.toLocaleDateString("ja-JP", { weekday: "long" })})`;
+        };
+
+        // 選択中のエリアを更新
+        const updateSelectedArea = (area) => {
+          Object.keys(elements).forEach((key) => {
+            if (key.endsWith("Area")) {
+              elements[key].classList.remove("selected");
+            }
+          });
+          elements[`${area}Area`].classList.add("selected");
+          state.selectedArea = area;
+        };
+
+        // テキストボックスとビューアの表示を切り替え
+        const toggleEditView = (box, viewer, isEdit) => {
+          box.style.display = isEdit ? "block" : "none";
+          viewer.style.display = isEdit ? "none" : "block";
+        };
+
+        // メモを保存
+        const saveMemo = (date, content) => {
+          const dateStr = date.toISOString().split("T")[0];
+          localStorage.setItem(dateStr, content);
+        };
+
+        // メモを読み込み
+        const loadMemo = (date, box, viewer) => {
+          const dateStr = date.toISOString().split("T")[0];
+          const content = localStorage.getItem(dateStr) || "";
+          box.value = content;
+          viewer.innerHTML = marked.parse(content);
+          viewer.style.display = content ? "block" : "none";
+          box.style.display = content ? "none" : "block";
+        };
+
+        // 日付ごとのメモを更新
+        const updateMemo = () => {
+          const yesterday = new Date(state.today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          const tomorrow = new Date(state.today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+
+          elements.yesterdayHeader.textContent = formatDate(yesterday);
+          elements.todayHeader.textContent = formatDate(state.today);
+          elements.tomorrowHeader.textContent = formatDate(tomorrow);
+
+          loadMemo(yesterday, elements.yesterdayBox, elements.yesterdayViewer);
+          loadMemo(state.today, elements.todayBox, elements.todayViewer);
+          loadMemo(tomorrow, elements.tomorrowBox, elements.tomorrowViewer);
+        };
+
+        // 初期化
+        const init = () => {
+          updateMemo();
+          updateSelectedArea("today");
+          elements.todayBox.focus();
+        };
+
+        // イベントリスナー
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowLeft") {
+            updateSelectedArea("yesterday");
+            toggleEditView(elements.yesterdayBox, elements.yesterdayViewer, true);
+            elements.yesterdayBox.focus();
+          } else if (e.key === "ArrowRight") {
+            updateSelectedArea("tomorrow");
+            toggleEditView(elements.tomorrowBox, elements.tomorrowViewer, true);
+            elements.tomorrowBox.focus();
+          } else if (e.altKey && e.key === "/") {
+            elements.shortcutModal.style.display = "block";
+          } else if (e.altKey && e.key === "s") {
+            updateSelectedArea("today");
+            toggleEditView(elements.todayBox, elements.todayViewer, true);
+            elements.todayBox.focus();
+          }
+        });
+
+        // テキストボックスの入力イベント
+        elements.yesterdayBox.addEventListener("input", () => {
+          const yesterday = new Date(state.today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          saveMemo(yesterday, elements.yesterdayBox.value);
+        });
+
+        elements.todayBox.addEventListener("input", () => {
+          saveMemo(state.today, elements.todayBox.value);
+        });
+
+        elements.tomorrowBox.addEventListener("input", () => {
+          const tomorrow = new Date(state.today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          saveMemo(tomorrow, elements.tomorrowBox.value);
+        });
+
+        // ビューアをクリックで編集モードに
+        elements.yesterdayViewer.addEventListener("click", () => {
+          toggleEditView(elements.yesterdayBox, elements.yesterdayViewer, true);
+          elements.yesterdayBox.focus();
+        });
+
+        elements.todayViewer.addEventListener("click", () => {
+          toggleEditView(elements.todayBox, elements.todayViewer, true);
+          elements.todayBox.focus();
+        });
+
+        elements.tomorrowViewer.addEventListener("click", () => {
+          toggleEditView(elements.tomorrowBox, elements.tomorrowViewer, true);
+          elements.tomorrowBox.focus();
+        });
+
+        // テキストボックスのフォーカスアウトイベント
+        elements.yesterdayBox.addEventListener("blur", () => {
+          toggleEditView(elements.yesterdayBox, elements.yesterdayViewer, false);
+        });
+
+        elements.todayBox.addEventListener("blur", () => {
+          toggleEditView(elements.todayBox, elements.todayViewer, false);
+        });
+
+        elements.tomorrowBox.addEventListener("blur", () => {
+          toggleEditView(elements.tomorrowBox, elements.tomorrowViewer, false);
+        });
+
+        // 初期化
+        init();
+      })();
+    </script>
+  </body>
+</html>
