@@ -18,23 +18,6 @@
         align-items: center;
         margin-top: 20px;
       }
-      .date-display {
-        display: flex;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-      .date-display .year {
-        font-size: 24px;
-        margin-right: 10px;
-      }
-      .date-display .month-day {
-        font-size: 36px;
-        margin-right: 10px;
-      }
-      .date-display .weekday {
-        font-size: 18px;
-        line-height: 1.2;
-      }
       .notes-container {
         display: flex;
         width: 100%;
@@ -188,11 +171,6 @@
   </head>
   <body>
     <div class="container">
-      <div class="date-display" id="dateDisplay">
-        <span class="year" id="yearDisplay">YYYY</span>
-        <span class="month-day" id="monthDayDisplay">MM/DD</span>
-        <span class="weekday" id="weekdayDisplay">EEEE</span>
-      </div>
       <div class="notes-container">
         <div class="note-area" id="yesterdayArea">
           <div class="note-header" id="yesterdayHeader">昨日</div>
@@ -280,9 +258,6 @@
     <script>
       (() => {
         const elements = {
-          yearDisplay: document.getElementById("yearDisplay"),
-          monthDayDisplay: document.getElementById("monthDayDisplay"),
-          weekdayDisplay: document.getElementById("weekdayDisplay"),
           yesterdayArea: document.getElementById("yesterdayArea"),
           todayArea: document.getElementById("todayArea"),
           tomorrowArea: document.getElementById("tomorrowArea"),
