@@ -8,10 +8,6 @@
       ::-webkit-scrollbar {
         display: none;
       }
-      h1 {
-        font-size: x-large;
-        margin-top: 43px;
-      }
       .container {
         display: flex;
         flex-direction: column;
@@ -30,9 +26,6 @@
         border: 1px solid #ddd;
         padding: 10px;
         box-sizing: border-box;
-      }
-      .note-area.selected {
-        background-color: #e7f3fe;
       }
       .note-header {
         text-align: center;
@@ -69,103 +62,6 @@
       .markdown-viewer {
         display: none;
       }
-      .search-modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(226, 226, 226, 0.4);
-      }
-      .search-modal-content {
-        background-color: #fafad2;
-        color: green;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #d8d8d8;
-        width: 80%;
-      }
-      #searchInput {
-        width: 100%;
-        padding: 15px;
-        font-size: 20px;
-        box-sizing: border-box;
-      }
-      #searchResults {
-        list-style: none;
-        padding: 0;
-      }
-      #searchResults li {
-        cursor: pointer;
-        padding: 10px;
-        font-size: 18px;
-      }
-      #searchResults li.selected,
-      #searchResults li:hover {
-        background-color: #ddd;
-      }
-      #searchResults li span.date {
-        display: block;
-        font-weight: 700;
-      }
-      #searchResults li span.text {
-        display: block;
-        margin-top: 5px;
-      }
-      .highlight {
-        background-color: #ff0;
-        font-weight: 700;
-      }
-      .storage-gauge-container {
-        width: 100%;
-        background-color: #ddd;
-      }
-      .storage-gauge {
-        width: 0;
-        background-color: #4caf50;
-        height: 30px;
-      }
-      .top-items {
-        padding-top: 10px;
-      }
-      .top-items p {
-        word-break: break-all;
-      }
-      :root {
-        --default-bg-color: #ffffff;
-        --default-text-color: #000000;
-        --dark-bg-color: #000000;
-        --dark-text-color: #ffffff;
-        --blue-bg-color: #e7f3fe;
-        --blue-text-color: #000000;
-        --orange-bg-color: #fff5e6;
-        --orange-text-color: #000000;
-        --green-bg-color: #e6f9e9;
-        --green-text-color: #000000;
-      }
-      body.default-theme {
-        background-color: var(--default-bg-color);
-        color: var(--default-text-color);
-      }
-      body.dark-theme {
-        background-color: var(--dark-bg-color);
-        color: var(--dark-text-color);
-      }
-      body.blue-theme {
-        background-color: var(--blue-bg-color);
-        color: var(--blue-text-color);
-      }
-      body.orange-theme {
-        background-color: var(--orange-bg-color);
-        color: var(--orange-text-color);
-      }
-      body.green-theme {
-        background-color: var(--green-bg-color);
-        color: var(--green-text-color);
-      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
@@ -177,7 +73,7 @@
           <textarea class="text-box" id="yesterdayBox" placeholder="メモを入力してください..."></textarea>
           <div class="markdown-viewer" id="yesterdayViewer"></div>
         </div>
-        <div class="note-area selected" id="todayArea">
+        <div class="note-area" id="todayArea">
           <div class="note-header" id="todayHeader">今日</div>
           <textarea class="text-box" id="todayBox" placeholder="メモを入力してください..."></textarea>
           <div class="markdown-viewer" id="todayViewer"></div>
@@ -189,72 +85,6 @@
         </div>
       </div>
     </div>
-    <div id="modalTemplate" class="modal-template">
-      <div class="modal-content">
-        <h2 class="modal-title"></h2>
-        <div class="modal-body"></div>
-        <div class="modal-footer"></div>
-      </div>
-    </div>
-    <div id="shortcutModal" class="search-modal close-on-click-outside">
-      <div class="search-modal-content">
-        <h2>ヘルプ</h2>
-        <h3>マウス操作</h3>
-        <ul>
-          <li><strong>本文クリック:</strong> 表示されている本文をクリックすると、編集モードになります。</li>
-        </ul>
-        <h3>ショートカットキー一覧</h3>
-        <h4>基本操作</h4>
-        <ul>
-          <li><strong>Alt + / :</strong> このヘルプを表示</li>
-          <li><strong>Alt + s :</strong> 今日の日付に移動</li>
-          <li><strong>Alt + k :</strong> 検索ウィンドウを表示</li>
-          <li><strong>Alt + l :</strong> 保存されているデータの使用状況を表示</li>
-          <li><strong>Alt + o :</strong> バックアップデータを取り込む</li>
-        </ul>
-        <h4>日付移動</h4>
-        <ul>
-          <li><strong>← :</strong> 昨日に移動</li>
-          <li><strong>→ :</strong> 明日に移動</li>
-        </ul>
-        <h4>その他</h4>
-        <ul>
-          <li><strong>Esc :</strong> このウィンドウを閉じる</li>
-        </ul>
-        <h3>データのバックアップと復元</h3>
-        <ul>
-          <li>メモが更新されると、JSONファイルが自動的にダウンロードされます。定期的に不要なファイルを削除してください。</li>
-          <li>新しいブラウザでJSONを開くには、Alt + o キーでファイル選択ダイアログを開き、バックアップを選択します。</li>
-        </ul>
-      </div>
-    </div>
-    <div id="searchModal" class="search-modal close-on-click-outside">
-      <div class="search-modal-content">
-        <input type="text" id="searchInput" placeholder="検索キーワードを入力" />
-        <ul id="searchResults"></ul>
-      </div>
-    </div>
-    <div id="storageModal" class="search-modal close-on-click-outside">
-      <div class="search-modal-content">
-        <h2>LocalStorage 使用状況</h2>
-        <div id="storageGaugeContainer" class="storage-gauge-container">
-          <div id="storageGauge" class="storage-gauge"></div>
-        </div>
-        <p id="storageText"></p>
-        <div id="topItems" class="top-items"></div>
-      </div>
-    </div>
-    <div id="themeModal" class="search-modal close-on-click-outside">
-      <div class="search-modal-content">
-        <h2>テーマカラーの選択</h2>
-        <button id="defaultTheme">白（デフォルト）</button>
-        <button id="darkTheme">黒（ダークモード）</button>
-        <button id="blueTheme">青</button>
-        <button id="orangeTheme">オレンジ</button>
-        <button id="greenTheme">緑</button>
-      </div>
-    </div>
-    <input type="file" id="fileInput" style="display: none" />
     <script>
       (() => {
         const elements = {
@@ -270,43 +100,15 @@
           yesterdayHeader: document.getElementById("yesterdayHeader"),
           todayHeader: document.getElementById("todayHeader"),
           tomorrowHeader: document.getElementById("tomorrowHeader"),
-          fileInput: document.getElementById("fileInput"),
-          searchModal: document.getElementById("searchModal"),
-          searchInput: document.getElementById("searchInput"),
-          searchResults: document.getElementById("searchResults"),
-          storageModal: document.getElementById("storageModal"),
-          storageGauge: document.getElementById("storageGauge"),
-          storageText: document.getElementById("storageText"),
-          shortcutModal: document.getElementById("shortcutModal"),
-          themeModal: document.getElementById("themeModal"),
-          topItems: document.getElementById("topItems"),
         };
 
         const state = {
           today: new Date(),
-          selectedArea: "today",
         };
 
         // 日付をフォーマットして表示
         const formatDate = (date) => {
           return `${date.getFullYear()}年${String(date.getMonth() + 1).padStart(2, "0")}月${String(date.getDate()).padStart(2, "0")}日 (${date.toLocaleDateString("ja-JP", { weekday: "long" })})`;
-        };
-
-        // 選択中のエリアを更新
-        const updateSelectedArea = (area) => {
-          Object.keys(elements).forEach((key) => {
-            if (key.endsWith("Area")) {
-              elements[key].classList.remove("selected");
-            }
-          });
-          elements[`${area}Area`].classList.add("selected");
-          state.selectedArea = area;
-        };
-
-        // テキストボックスとビューアの表示を切り替え
-        const toggleEditView = (box, viewer, isEdit) => {
-          box.style.display = isEdit ? "block" : "none";
-          viewer.style.display = isEdit ? "none" : "block";
         };
 
         // メモを保存
@@ -341,48 +143,16 @@
           loadMemo(tomorrow, elements.tomorrowBox, elements.tomorrowViewer);
         };
 
+        // テキストボックスとビューアの表示を切り替え
+        const toggleEditView = (box, viewer, isEdit) => {
+          box.style.display = isEdit ? "block" : "none";
+          viewer.style.display = isEdit ? "none" : "block";
+        };
+
         // 初期化
         const init = () => {
           updateMemo();
-          updateSelectedArea("today");
-          elements.todayBox.focus();
         };
-
-        // イベントリスナー
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "ArrowLeft") {
-            updateSelectedArea("yesterday");
-            toggleEditView(elements.yesterdayBox, elements.yesterdayViewer, true);
-            elements.yesterdayBox.focus();
-          } else if (e.key === "ArrowRight") {
-            updateSelectedArea("tomorrow");
-            toggleEditView(elements.tomorrowBox, elements.tomorrowViewer, true);
-            elements.tomorrowBox.focus();
-          } else if (e.altKey && e.key === "/") {
-            elements.shortcutModal.style.display = "block";
-          } else if (e.altKey && e.key === "s") {
-            updateSelectedArea("today");
-            toggleEditView(elements.todayBox, elements.todayViewer, true);
-            elements.todayBox.focus();
-          }
-        });
-
-        // テキストボックスの入力イベント
-        elements.yesterdayBox.addEventListener("input", () => {
-          const yesterday = new Date(state.today);
-          yesterday.setDate(yesterday.getDate() - 1);
-          saveMemo(yesterday, elements.yesterdayBox.value);
-        });
-
-        elements.todayBox.addEventListener("input", () => {
-          saveMemo(state.today, elements.todayBox.value);
-        });
-
-        elements.tomorrowBox.addEventListener("input", () => {
-          const tomorrow = new Date(state.today);
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          saveMemo(tomorrow, elements.tomorrowBox.value);
-        });
 
         // ビューアをクリックで編集モードに
         elements.yesterdayViewer.addEventListener("click", () => {
@@ -402,16 +172,113 @@
 
         // テキストボックスのフォーカスアウトイベント
         elements.yesterdayBox.addEventListener("blur", () => {
+          const yesterday = new Date(state.today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          saveMemo(yesterday, elements.yesterdayBox.value);
+          elements.yesterdayViewer.innerHTML = marked.parse(elements.yesterdayBox.value);
           toggleEditView(elements.yesterdayBox, elements.yesterdayViewer, false);
         });
 
         elements.todayBox.addEventListener("blur", () => {
+          saveMemo(state.today, elements.todayBox.value);
+          elements.todayViewer.innerHTML = marked.parse(elements.todayBox.value);
           toggleEditView(elements.todayBox, elements.todayViewer, false);
         });
 
         elements.tomorrowBox.addEventListener("blur", () => {
+          const tomorrow = new Date(state.today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          saveMemo(tomorrow, elements.tomorrowBox.value);
+          elements.tomorrowViewer.innerHTML = marked.parse(elements.tomorrowBox.value);
           toggleEditView(elements.tomorrowBox, elements.tomorrowViewer, false);
         });
+
+        // テキストボックスのキーダウンイベント（リスト・見出し補完）
+        const setupTextBoxKeyDown = (box) => {
+          box.addEventListener("keydown", (e) => {
+            const t = box.selectionStart;
+            const a = box.value.substring(0, t);
+            const l = a.split("\n");
+            const n = l.length - 1;
+            const o = l[n];
+            const r = o.match(/^(\s*)- /);
+
+            if ("Tab" === e.key) {
+              e.preventDefault();
+              const t = box.selectionStart;
+              const a = box.selectionEnd;
+              const l = box.value.slice(0, t);
+              const n = box.value.slice(t, a);
+              const o = box.value.slice(a);
+              const r = l.lastIndexOf("\n") + 1;
+              const c = a + o.indexOf("\n");
+              const i = box.value.slice(r, c).split("\n");
+
+              if (e.shiftKey) {
+                const e = i.map((e) => e.startsWith("  ") ? e.slice(2) : e).join("\n");
+                box.value = box.value.slice(0, r) + e + box.value.slice(c);
+                const a = t - 2 * i.filter((e) => e.startsWith("  ")).length;
+                box.selectionStart = a;
+                box.selectionEnd = a;
+              } else {
+                const e = i.map((e) => "  " + e).join("\n");
+                box.value = box.value.slice(0, r) + e + box.value.slice(c);
+                const a = t + 2 * i.length;
+                box.selectionStart = a;
+                box.selectionEnd = a;
+              }
+            }
+
+            if ("Enter" === e.key) {
+              if (r) {
+                e.preventDefault();
+                const n = r[1];
+                const c = box.value.substring(t);
+                if ("-" === o.trim()) {
+                  l.pop();
+                  const e = l.join("\n") + "\n" + c;
+                  box.value = e;
+                  box.selectionStart = box.selectionEnd = t - o.length + 1;
+                } else {
+                  const e = a + "\n" + n + "- " + c;
+                  box.value = e;
+                  box.selectionStart = box.selectionEnd = t + n.length + 3;
+                }
+              } else {
+                const c = o.match(/^#\s/);
+                if (c && o.trim().length > 2) {
+                  e.preventDefault();
+                  const l = a + "\n- " + box.value.substring(t);
+                  box.value = l;
+                  box.selectionStart = box.selectionEnd = t + 4;
+                } else if (n > 1) {
+                  e.preventDefault();
+                  const l = a + "\n\n# " + box.value.substring(t);
+                  box.value = l;
+                  box.selectionStart = box.selectionEnd = t + 6;
+                }
+              }
+            } else if ("Backspace" === e.key) {
+              if ("-" === o.trim()) {
+                e.preventDefault();
+                l.pop();
+                const a = l.join("\n") + box.value.substring(t);
+                box.value = a;
+                box.selectionStart = box.selectionEnd = t - o.length;
+              }
+            } else if ("#" === e.key && "" === o) {
+              e.preventDefault();
+              const l = a + "# " + box.value.substring(t);
+              box.value = l;
+              box.selectionStart = box.selectionEnd = t + 2;
+            }
+          });
+        };
+
+        // 各テキストボックスにキーダウンイベントを設定
+        setupTextBoxKeyDown(elements.yesterdayBox);
+        setupTextBoxKeyDown(elements.todayBox);
+        setupTextBoxKeyDown(elements.tomorrowBox);
 
         // 初期化
         init();
